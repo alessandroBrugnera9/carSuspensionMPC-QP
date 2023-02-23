@@ -68,7 +68,8 @@ R = R + sys.D' * Q * sys.D;
 Q = sys.C' * Q * sys.C;
 
 % Compute terminal penalty from unconstrained, infinite horizon LQR
-
+%[K,S,e] = dlqr(sys.A,sys.B,Q,R,S) maybe use this method
+[K,S,P] = lqr(sys.A,sys.B, Q, R, S);
 
 
 % Concatenate the weighting matrices for the entire state and input
