@@ -52,20 +52,20 @@ D = [-1/p.ms; 0; 0];
 
 % Set up the linear, nominal state space model and discretize
 systemContinuos = ss(A,B,C,D);
-sys = c2d(systemContinuos,p.Ts);
+sys = c2d(systemContinuos,p.Ts); 
 
 % ======================================================================= %
 % Cost-function-related computations
 
 % Parameters of a quadratic stage cost function in the outputs and inputs
-% !!! CODE TO BE ADDED !!!
+Q = diag(1,5E4,5E3);
 
 % Weighting matrices for equivalently expressing the cost in terms of the
 % states and the inputs
-% !!! CODE TO BE ADDED !!!
+R = 1E-5;
 
 % Compute terminal penalty from unconstrained, infinite horizon LQR
-% !!! CODE TO BE ADDED !!!
+S = 1; % this value is not explicited
 
 % Concatenate the weighting matrices for the entire state and input
 % sequence in order to represent the cost function in a vectorized form
