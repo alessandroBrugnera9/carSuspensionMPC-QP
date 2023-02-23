@@ -88,23 +88,36 @@ p.Lxu = [p.Lxu; zeros(p.nx, p.N*p.nu)];
 % Quadratic programming reformulations
 
 % Initialize cell arrays, representing the block matrices M and W
-% !!! CODE TO BE ADDED !!! 
+M = cell(p.N+1, 1);
+W = cell(p.N+1, p.N);
 
 % Build up block matrices M and W to directly express the state sequence in
 % terms of the initial state and the input sequence
-% !!! CODE TO BE ADDED !!!
+
+M{i} = eye(p.nx);
+W(i, :) = {zeros(p.nx, p.nu)};        
+for i = 2 : p.N+1 % starting in 2 because the first line of W is only zeros
+    M{i} = model.A^(i-1);
+
+    % Exploit structure of W: first element of each line needs to be
+    % computed while all follow-up elements are the previous line
+    % shifted by one to the right
+    W(i, :) = [{model.A^(i-2) * model.B}, W(i-1, 1:end-1)];
+end
 
 % Convert the cell arrays representing the block matrices into numerical
 % arrays (matrices)
-% !!! CODE TO BE ADDED !!!
+M = cell2mat(M);
+W = cell2mat(W);
 
 % Compute the QP cost matrix H
-% !!! CODE TO BE ADDED  !!!
+p.H = 2 * (p.Lu + W'*p.Lxu + p.Lxu' * W + W' * p.Lx * W);
 
 % Due to numeric errors, the matrix is only almost symmetric (deviations in
 % late decimal places). As QP requires H to be symmetric, it is symmetrized
 % to compensate for those numerical errors
-% !!! CODE TO BE ADDED !!!
+p.H = (p.H + p.H')/2;
+
 
 % Compute the QP cost matrix f^T as a function of the initial condition
-% !!! CODE TO BE ADDED !!!
+p.fT = @(x)(2 * x' * M' * (p.Lx * W + p.Lxu));
