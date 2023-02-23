@@ -58,14 +58,18 @@ sys = c2d(systemContinuos,p.Ts);
 % Cost-function-related computations
 
 % Parameters of a quadratic stage cost function in the outputs and inputs
-Q = diag(1,5E4,5E3);
+R = 1E-05;                     % Input penalty: Penalize large input values
+Q = diag([1, 5E+04, 5E+03]);
 
 % Weighting matrices for equivalently expressing the cost in terms of the
 % states and the inputs
-R = 1E-5;
+S = sys.C' * Q * sys.D;
+R = R + sys.D' * Q * sys.D;
+Q = sys.C' * Q * sys.C;
 
 % Compute terminal penalty from unconstrained, infinite horizon LQR
-S = 1; % this value is not explicited
+
+
 
 % Concatenate the weighting matrices for the entire state and input
 % sequence in order to represent the cost function in a vectorized form
