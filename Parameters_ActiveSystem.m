@@ -74,8 +74,16 @@ Q = sys.C' * Q * sys.C;
 
 % Concatenate the weighting matrices for the entire state and input
 % sequence in order to represent the cost function in a vectorized form
-% !!! CODE TO BE ADDED !!!
-                                
+p.Lx = [repmat({Q},1, p.N), {P}];
+p.Lx = blkdiag(p.Lx{:});
+
+p.Lu = repmat({R}, 1, p.N);
+p.Lu = blkdiag(p.Lu{:});
+
+p.Lxu = repmat({S}, 1, p.N);
+p.Lxu = blkdiag(p.Lxu{:});
+p.Lxu = [p.Lxu; zeros(p.nx, p.N*p.nu)];
+
 % ======================================================================= %
 % Quadratic programming reformulations
 
