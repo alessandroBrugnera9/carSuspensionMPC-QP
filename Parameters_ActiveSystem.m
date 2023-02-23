@@ -51,7 +51,8 @@ D = [-1/p.ms; 0; 0];
 % Model-related computations
 
 % Set up the linear, nominal state space model and discretize
-% !!! CODE TO BE ADDED !!!
+systemContinuos = ss(A,B,C,D);
+sys = c2d(systemContinuos,p.Ts);
 
 % ======================================================================= %
 % Cost-function-related computations
