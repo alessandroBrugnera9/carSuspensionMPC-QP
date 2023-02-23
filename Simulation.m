@@ -38,7 +38,7 @@ x_controlled = zeros(p.nx, length(t));
 y_controlled = zeros(p.ny, length(t));
 
 % Control input
-uVector = zeros(p.nu, length(t)-1);
+u = zeros(p.nu, length(t)-1);
 
 % Computation times
 if strcmp(system, 'active')
@@ -160,7 +160,7 @@ sgtitle('Performance Measures');
 figure(3);
 hold on; grid on;
 
-plot(t(1:end-1), uVector, 'Linewidth', 2);
+plot(t(1:end-1), u, 'Linewidth', 2);
 
 xlabel('t (s)'); 
 if strcmp(system, 'active')
@@ -231,10 +231,10 @@ legend('Passive', 'Active');
 
 if strcmp(system, 'active')
     ddz_us_passive = 1/p.mus * sum([p.ks, p.cs, p.kt, -p.cs] .* x_uncontrolled', 2);
-    ddz_us_active = 1/p.mus * (sum([p.ks, p.cs, p.kt, -p.cs] .* x_controlled', 2) + [0; uVector']);
+    ddz_us_active = 1/p.mus * (sum([p.ks, p.cs, p.kt, -p.cs] .* x_controlled', 2) + [0; u']);
 elseif strcmp(system, 'semiactive')
     ddz_us_passive = 1/p.mus * sum([p.ks, p.cs, p.kt, -p.cs] .* x_uncontrolled', 2);
-    ddz_us_active = 1/p.mus * sum([p.ks*ones(length(uVector)+1, 1), [p.cs; uVector'], p.kt*ones(length(uVector)+1, 1), -[p.cs; uVector']] .* x_controlled', 2);
+    ddz_us_active = 1/p.mus * sum([p.ks*ones(length(u)+1, 1), [p.cs; u'], p.kt*ones(length(u)+1, 1), -[p.cs; u']] .* x_controlled', 2);
 end
 
 subplot(4, 2, 7); hold on; grid on;
