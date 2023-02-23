@@ -69,7 +69,8 @@ Q = sys.C' * Q * sys.C;
 
 % Compute terminal penalty from unconstrained, infinite horizon LQR
 %[K,S,e] = dlqr(sys.A,sys.B,Q,R,S) maybe use this method
-[K,SRicatti,P] = lqr(sys.A,sys.B, Q, R, S);
+%[K,SRicatti,P] = lqr(sys, Q, R, S);
+[~, P] = lqr(sys.A,sys.B, Q, R, S);
 
 
 % Concatenate the weighting matrices for the entire state and input
@@ -94,15 +95,15 @@ W = cell(p.N+1, p.N);
 % Build up block matrices M and W to directly express the state sequence in
 % terms of the initial state and the input sequence
 
-M{i} = eye(p.nx);
-W(i, :) = {zeros(p.nx, p.nu)};        
+M{1} = eye(p.nx);
+W(1, :) = {zeros(p.nx, p.nu)};        
 for i = 2 : p.N+1 % starting in 2 because the first line of W is only zeros
-    M{i} = model.A^(i-1);
+    M{i} = sys.A^(i-1);
 
     % Exploit structure of W: first element of each line needs to be
     % computed while all follow-up elements are the previous line
     % shifted by one to the right
-    W(i, :) = [{model.A^(i-2) * model.B}, W(i-1, 1:end-1)];
+    W(i, :) = [{sys.A^(i-2) * sys.B}, W(i-1, 1:end-1)];
 end
 
 % Convert the cell arrays representing the block matrices into numerical

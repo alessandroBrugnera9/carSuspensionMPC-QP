@@ -1,4 +1,4 @@
-function  uVector = Linear_MPC_quadprog (x0, uVectorGuess)
+function  uVector = Linear_MPC_quadprog (x0, uVector0, p)
 
 fT = p.fT(x0); %calculate cost dependant on initial condition
 
@@ -10,7 +10,7 @@ uVector = quadprog(p.H, ...     Cost function parameter H
                  [], ...      Inhomogeneity for linear equality constraints
                  [], ...      Lower bound on u_seq
                  [], ...      Upper bound on u_seq
-                 uVectorGuess, ... Initial guess
+                 uVector0, ... Initial guess
                  [] ...       Solver options
                  );  
              

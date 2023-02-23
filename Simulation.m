@@ -38,7 +38,7 @@ x_controlled = zeros(p.nx, length(t));
 y_controlled = zeros(p.ny, length(t));
 
 % Control input
-u = zeros(p.nu, length(t)-1);
+uVector = zeros(p.nu, length(t)-1);
 
 % Computation times
 if strcmp(system, 'active')
@@ -75,20 +75,28 @@ for k = 1 : 1 : length(t)-1
         
         % === With control ============================================== %
         
-        % Initial guess of the input sequence for the optimization routine
-        % !!! CODE TO BE ADDED !!!
+        % Initial guess of the input sequence for the optimization routine      
+        if k == 1
+            uVector0 = zeros(p.N, 1);
+        else
+            uVector0 = [uVectorNext(2:end); uVectorNext(end)];
+        end
         
         % MPC using quadratic programming
-        % !!! CODE TO BE ADDED !!!
+        tic
+        uVectorNext = Linear_MPC_quadprog(x_controlled(:, k), uVector0 , p);
+        cpu_time_quadprog(k) = toc;
+        
+        % MPC using fmincon (universal solver)
         
         % Extract control input for the next sampling period
-        % !!! CODE TO BE ADDED !!!
+        u(k) = uVectorNext(1);
         
         % Apply optimal input to the system
-        % !!! CODE TO BE ADDED !!!
+        x_controlled(:, k+1) = SuspensionSystem(x_controlled(:, k), u(k), dh(k), p);
         
         % Compute performance-relevant quantities
-        % !!! CODE TO BE ADDED !!!
+        y_controlled(:, k+1) = ControlledQuantities(x_controlled(:, k+1), u(k), p);
         
     end
     
@@ -152,7 +160,7 @@ sgtitle('Performance Measures');
 figure(3);
 hold on; grid on;
 
-plot(t(1:end-1), u, 'Linewidth', 2);
+plot(t(1:end-1), uVector, 'Linewidth', 2);
 
 xlabel('t (s)'); 
 if strcmp(system, 'active')
@@ -223,10 +231,10 @@ legend('Passive', 'Active');
 
 if strcmp(system, 'active')
     ddz_us_passive = 1/p.mus * sum([p.ks, p.cs, p.kt, -p.cs] .* x_uncontrolled', 2);
-    ddz_us_active = 1/p.mus * (sum([p.ks, p.cs, p.kt, -p.cs] .* x_controlled', 2) + [0; u']);
+    ddz_us_active = 1/p.mus * (sum([p.ks, p.cs, p.kt, -p.cs] .* x_controlled', 2) + [0; uVector']);
 elseif strcmp(system, 'semiactive')
     ddz_us_passive = 1/p.mus * sum([p.ks, p.cs, p.kt, -p.cs] .* x_uncontrolled', 2);
-    ddz_us_active = 1/p.mus * sum([p.ks*ones(length(u)+1, 1), [p.cs; u'], p.kt*ones(length(u)+1, 1), -[p.cs; u']] .* x_controlled', 2);
+    ddz_us_active = 1/p.mus * sum([p.ks*ones(length(uVector)+1, 1), [p.cs; uVector'], p.kt*ones(length(uVector)+1, 1), -[p.cs; uVector']] .* x_controlled', 2);
 end
 
 subplot(4, 2, 7); hold on; grid on;
