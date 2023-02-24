@@ -89,7 +89,7 @@ for k = 1 : 1 : length(t)-1
         
         % MPC using fmincon (universal solver)
         tic
-        uVectorNextFmincon = Linear_MPC_fmincon(x_controlled(:, k), uVector0 , p);
+        %uVectorNext = Linear_MPC_fmincon(x_controlled(:, k), uVector0 , p);
         cpu_time_fmincon(k) = toc;
         
         % Extract control input for the next sampling period
